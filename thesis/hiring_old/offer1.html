@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunt Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Round 1: Accept Offer</h1>
+    </div>
+    <p class="para">Out of the 5 companies you interviewed with, 2 have extended you an offer: </p>
+    <div class="content-container">
+        <div id="selectedForInterview">
+            <!-- Companies that select you for an interview will be displayed here -->
+        </div>
+        
+    </div>
+    <p class="para fade-in-slow" style="opacity: 0 ;" >Click one of them to accept the offer! </p>
+
+
+    <div id="congratulations">
+
+    </div>
+  
+    
+    
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+        const selectedForInterview = document.getElementById('selectedForInterview');
+        // Retrieve the selected companies from local storage
+        const interviewedCompanies = JSON.parse(localStorage.getItem('round1Interviews'));
+        const offeredCompanies = [];
+        const congratulations = document.getElementById('congratulations');
+
+        if (interviewedCompanies && interviewedCompanies.length > 0) {
+            const displayCompanies = () => {
+                interviewedCompanies.forEach(company => {
+                    const div = document.createElement('div');
+                    div.textContent = company;
+                    div.className = 'company fade-in'; // Apply fade-in class here
+                    selectedForInterview.appendChild(div);
+                });
+
+                // Randomly select 2 for offers after fade-in effect
+                setTimeout(selectOffers, 1000);
+            };
+
+            const selectOffers = () => {
+                const selectedIndices = new Set();
+                while (selectedIndices.size < 2) {
+                    const randomIndex = Math.floor(Math.random() * interviewedCompanies.length);
+                    selectedIndices.add(randomIndex);
+                }
+
+                Array.from(selectedForInterview.children).forEach((div, index) => {
+                    if (selectedIndices.has(index)) {
+                        div.classList.add('highlight');
+                        offeredCompanies.push(div.textContent);
+                        // Attach click event listener after highlights
+                        div.addEventListener('click', acceptOffer);
+                    }
+                });
+            };
+
+            const acceptOffer = event => {
+                if (event.target.classList.contains('highlight')) {
+                    const p = document.createElement('p');
+                    p.classList.add('para');
+                    p.textContent = 'Congratulations on accepting a job at ' + event.target.textContent + "!";
+                    congratulations.appendChild(p);
+                    // Further interactions here, like next steps or resetting the game
+
+                    setTimeout(() => {
+                    const p2 = document.createElement('p');
+                    p2.classList.add('para', 'fade-in');
+                    p2.textContent = 'Now let\'s do the process again, except this time some companies are using AI products in their hiring process.';
+                    congratulations.appendChild(p2)
+                    }, 1000); 
+
+                    setTimeout(() => {
+                    // Check if the Next button already exists to avoid creating duplicates
+                        let nextButton = document.getElementById('nextBtn');
+                        if (!nextButton) {
+                        nextButton = document.createElement('button');
+                        nextButton.id = 'nextBtn';
+                        nextButton.textContent = 'Next';
+                        nextButton.style.display = 'block'; // Ensure the button is visible
+
+                        // Optionally, define the Next button's click behavior
+                        nextButton.addEventListener('click', function() {
+                            localStorage.setItem('round1Offers', JSON.stringify(offeredCompanies));
+                            window.location.href = 'resume2.html'; // Uncomment to navigate
+                        });
+
+                        // Append the Next button to the parent div or another specific container
+                        document.getElementById('congratulations').appendChild(nextButton);
+                        }
+                    }, 1500); 
+                
+                }
+                // Remove event listeners to prevent multiple selections
+                offeredCompanies.forEach(company => {
+                    const divs = Array.from(selectedForInterview.children);
+                    divs.forEach(div => div.removeEventListener('click', acceptOffer));
+                });
+            };
+
+            displayCompanies(); // Initiate the process
+        } else {
+            // Handle case where no companies were selected or stored
+            selectedForInterview.textContent = 'No companies selected.';
+        }
+    });
+
+
+
+
+
+
+        
+
+</script>
+        
+    
+    
+</body>
+</html>

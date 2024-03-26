@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-Driving Car Simulator</title>
+<style>
+  .svg-container {
+    display: grid;
+    position: relative;
+    background-color: skyblue; 
+  }
+  .svg-container::before {
+    width: 100%;
+    grid-area: 1 / 1 / 2 / 2;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    content: "";
+  }
+  svg {
+    grid-area: 1 / 1 / 2 / 2;
+  }
+ 
+  text {
+    visibility: hidden; /* Hide text labels by default */
+    font-family: Courier, monospace;
+    font-size: 5px;
+    pointer-events: none; /* Ensures the text doesn't interfere with mouse events */
+    fill: rgb(0, 0, 0); /* Text color */
+  }
+
+  .visible-text{
+    visibility: visible !important; /* Override to make specific text always visible */
+    font-size: 2px; /* Adjust size as needed */
+    fill: black; /* Text color */
+    font-family: Arial, sans-serif;
+  }
+
+  #road:hover{
+    stroke: rgb(192, 2, 255); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #left-building:hover{
+    stroke: rgb(69, 255, 2); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #left-sidewalk:hover{
+    stroke: rgb(2, 57, 255); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #right-building:hover{
+    stroke: rgb(69, 255, 2); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #building-3:hover{
+    stroke: rgb(69, 255, 2); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #right-sidewalk:hover{
+    stroke: rgb(2, 57, 255); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #yellow-line:hover{
+    stroke: rgb(255, 2, 2); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #tree:hover{
+    stroke: rgb(255, 251, 2); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  #car:hover{
+    stroke: rgb(255, 2, 200); /* Outline color on hover */
+    stroke-width: 1px; /* Outline width on hover */
+  }
+  path:hover + text {
+    visibility: visible; /* Show text label on hover */
+  }
+  g:hover + text {
+    visibility: visible; /* Show text label on hover */
+  }
+
+  /* 
+  (2, 255, 242)
+  (255, 2, 200)
+  */
+
+  /* Other styles here */
+</style>
+</head>
+<body>
+
+<div class="svg-container">
+  <svg viewBox="0 0 160 90" >
+
+    <!-- White Rectangle -->
+    <rect x="50" y="5" width="60" height="26" fill="white" />
+    <!-- Text in Rectangle -->
+    <text x="52" y="10" fill="black" class="visible-text" font-size="5">
+      <tspan x="52" dy="0" fill="black" class="visible-text" font-size="5">
+        Your car has now moved forward a bit! Note how the computer   </tspan>
+      <!-- Adjust 'dy' to manage the distance between lines -->
+    <tspan x="52" dy="3" fill="black" class="visible-text" font-size="5">
+        vision system has been able to track the objects in its  </tspan>
+    <tspan x="52" dy="3" fill="black" class="visible-text" font-size="5">
+        surroundings as the scene changes. This ability is extremely 
+       </tspan>
+    <tspan x="52" dy="3" fill="black" class="visible-text" font-size="5">
+        important because it allows the car to measure the speed of 
+      </tspan>
+    <tspan x="52" dy="3" fill="black" class="visible-text" font-size="5">
+        objects and predict the actions they will take next.
+    </tspan>  
+    <tspan x="52" dy="3" fill="black" class="visible-text" font-size="5">
+      
+    </tspan> 
+    </text>
+
+    <!-- Next Button Background (simulated button) -->
+    <rect id="nextButton" x="97" y="24" width="9" height="4.5" fill="lightgray" rx="1" ry="1" cursor="pointer"/>
+    <!-- Next Button Text -->
+    <text x="99.5" y="27" class="visible-text" font="Arial, sans-serif" font-size="4" fill="black" cursor="pointer">
+      Next
+    </text>
+
+    <!-- Back Button Background (simulated button) -->
+    <rect id="backButton" x="54" y="24" width="9" height="4.5" fill="lightgray" rx="1" ry="1" cursor="pointer"/>
+    <!-- Back Button Text -->
+    <text x="56.5" y="27" class="visible-text" font="Arial, sans-serif" font-size="4" fill="black" cursor="pointer">
+      Back
+    </text>
+
+
+    <!-- Road Shape -->
+    <path id="road" d="M 77,45 L 78,45 L 145,90 L -20,90 Z" fill="gray" />
+    <text x="23" y="78">Road #1</text>
+
+    <!-- Grass -->
+    <path id="grass" d="M 0,45 L  -40,90 L 77,45  Z" fill="rgb(120, 205, 64)" />
+
+    <!-- Grass -->
+    <path id="grass" d="M 160,45 L 160,90 L 78,45  Z" fill="rgb(120, 205, 64)" />
+
+    <!-- Left Sidewalk -->
+    <path id="left-sidewalk" d="M -40,90 L 77,45 L -20,90 Z" fill="rgb(239, 231, 177)" />
+    <text x="15" y="80">Sidewalk #1</text>
+
+    <!-- Right Sidewalk -->
+    <path id="right-sidewalk" d="M 78,45 L 160,90 L 145,90 Z" fill="rgb(239, 231, 177)" />
+    <text x="80" y="80">Sidewalk #2</text>
+    
+    <!-- Yellow Line -->
+    <path id="yellow-line" d="M 77.5,45 L 50,90 L 54,90  Z" fill="rgb(242, 221, 37)" />
+    <text x="68" y="80">Lane Line #1</text>
+
+    <!-- Road 2 -->
+    <path id="road" d="M 0,47 L 160,47 L 160,48 L 0,48 Z" fill="gray" />
+    <text x="80" y="45">Road #2</text>
+
+    <!-- Left Building -->
+    <path id="left-building" d="M 0,18 L 0,75 L 40,59.2 L 40,30.5 Z" fill="rgb(241, 123, 64)" />
+    <text x="7" y="45">Building #1</text> 
+    
+    <!-- Right Building -->
+    <path id="right-building" d="M 110,62.6 L 110,32.5 L 160,18 L 160,90 Z" fill="rgb(241, 123, 64)" />
+    <text x="113" y="17">Building #2</text>
+
+    <!-- Left Building -->
+    <g id="building-3">
+        <path id="" d="M 77,45 L 72,47 L 72,40.5, L 77,42 Z" fill="rgb(241, 123, 64)" />
+        <path id="" d="M 72,47 L 50,47 L 50,40.5 L 72,40.5 Z" fill="rgb(255, 149, 96)" />
+    </g>
+    <text x="45" y="38">Building #3</text>
+
+
+
+    <!-- Car -->
+    <g id="car">
+        <path id="" d="M 78,49 L 98,49 L 105,65 L 71,65 Z" fill="darkblue" />
+        <path id="" d="M 97,65 L 100,65 L 100,70 L 97,70 Z" fill="black" />
+        <path id="" d="M 79,65 L 76,65 L 76,70 L 79,70 Z" fill="black" />
+      </g>
+      <text x="80" y="80">Car #1</text>
+
+    <!-- Purple Car -->
+    <g id="car">
+        <path id="" d="M 51,46.9 L 52,44.9 L 55,44.9 L 56,46.9 Z" fill="purple" />
+        <circle cx="52.2" cy="46.9" r="0.5" fill="black"/>
+        <circle cx="54.8" cy="46.9" r="0.5" fill="black"/>
+      </g>
+    <text x="54" y="43">Car #2</text>
+
+    <!-- Tree -->
+    <g id="tree">
+      <circle cx="148" cy="32" r="15" fill="green"/>
+      <path id="" d="M 146,32 L 150,32 L 150,86 L 146,86 Z" fill="brown" />
+      </g>
+      <text x="117" y="50">Tree #1</text>
+
+    
+    <!-- Add more elements here as needed -->
+  </svg>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const nextButton = document.getElementById('nextButton');
+  
+    nextButton.addEventListener('click', function() {
+      window.location.href = 'intersection.html';
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const nextButton = document.getElementById('backButton');
+  
+    nextButton.addEventListener('click', function() {
+      window.location.href = 'intro.html';
+    });
+  });
+  </script>
+  
+</body>
+</html>

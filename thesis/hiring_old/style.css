@@ -1,0 +1,295 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+#companiesList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 70%; /* Adjust based on total width */
+    margin: auto;
+}
+
+#companiesList button {
+    flex: 1 0 calc(20% - 10px);
+    padding: 25px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.selected {
+    background-color: lightgreen;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%; /* Match the max-width of #companiesList for alignment */
+    margin-top: 40px;
+}
+
+#selectedCount {
+    font-size: 20px; /* Bigger font size for the counter */
+    margin-left: 20px; /* Align with the company buttons */
+}
+
+#submitBtn {
+    font-size: 16px; /* Bigger font size for the button */
+    padding: 10px 20px;
+    margin-right: 20px; /* Align with the company buttons */
+    background-color: aliceblue;
+}
+
+#nextBtn{
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: aliceblue;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    margin-top: 30px;
+    animation: fadeIn 2s ease-out 4s forwards; 
+}
+
+#firstNextBtn, #secondNextBtn {
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: aliceblue;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    margin-top: -60px;
+    margin-bottom: 20px;
+    animation: fadeIn 2s ease-out 3s forwards; 
+}
+
+#thirdNextBtn {
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: aliceblue;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    margin-top: 0px;
+    margin-bottom: 20px;
+    animation: fadeIn 2s ease-out 3s forwards; 
+}
+
+
+#tryBtn {
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: whitesmoke;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    animation: fadeIn 2s ease-out 4s forwards; 
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-top: 15px;
+}
+
+#findBtn {
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: aliceblue;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    animation: fadeIn 2s ease-out 4s forwards; 
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-top: 15px;
+}
+
+#congratulations {
+    align-self: center;
+}
+
+#startGameBtn{
+    font-size: 16px; /* Bigger font size for the button */
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: aliceblue;
+}
+
+.para{
+    font-size: 20px; /* Bigger font size for the button */
+    text-align: center;
+    width: 100%
+}
+
+.paraLong{
+    font-size: 20px; /* Bigger font size for the button */
+    text-align: center;
+    width: 70%;
+}
+
+#selectedCompaniesList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%; /* Adjust based on total width */
+    margin: auto;
+}
+
+#selectedCompaniesList div {
+    flex: 1 0 calc(15% - 10px); /* Adjust the calc() as needed to fit 5 per row */
+    text-align: center;
+    padding: 25px;
+    border: 1px solid #ccc; /* Optional: adds a border around each company div */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a slight shadow for depth */
+    border-radius: 4px; /* Optional: rounds the corners of each company div */
+}
+
+#round1HumanBiases, #round2ResumeScreening, #round2VidInterview{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%; /* Adjust based on total width */
+    margin: auto;
+}
+
+#round1HumanBiases div, #round2ResumeScreening div, #round2VidInterview div {
+    flex: 1 0 calc(15% - 10px); /* Adjust the calc() as needed to fit 5 per row */
+    text-align: center;
+    padding: 25px;
+    border: 1px solid #ccc; /* Optional: adds a border around each company div */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a slight shadow for depth */
+    border-radius: 4px; /* Optional: rounds the corners of each company div */
+}
+
+#selectedForInterview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%; /* Adjust based on total width */
+    margin: auto;
+}
+
+#selectedForInterview div {
+    flex: 1 0 calc(0% - 0px); /* Adjust the calc() as needed to fit 5 per row */
+    text-align: center;
+    padding: 25px;
+    border: 1px solid #ccc; /* Optional: adds a border around each company div */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a slight shadow for depth */
+    border-radius: 4px; /* Optional: rounds the corners of each company div */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 2s ease-out;
+}
+
+.fade-in-slow {
+    animation: fadeIn 2s ease-out 3s forwards;
+}
+
+
+@keyframes fadeInHighlight {
+    from { background-color: transparent; }
+    to { background-color: lightgreen; }
+}
+
+.highlight {
+    animation: fadeInHighlight 2s ease-out 1s forwards; /* Starts after 1s delay */
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Aligns child elements (including your button) to the right */
+    max-width: 70%; /* Same width as your #selectedCompaniesList for alignment */
+    margin: auto; /* Centers the container if needed */
+}
+
+#legendContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+  
+#gradientLegend {
+    height: 20px;
+    background: linear-gradient(to right, #f5f5dc, #f5f5cc, #ede9d9, #e4d8c8, #dfd1be);
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+#legendLabels, #outlinedLegend, #filledLegend {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+#legendLabels span, #outlinedLegend span, #filledLegend span {
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.outlinedExampleInterview {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    outline: 2px solid #FF4500; /* Match the outline style applied to companies */
+    outline-offset: -2px;
+    margin-right: 5px;
+ }
+
+.outlinedExampleOffer {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    outline: 2px solid #0d8af1; /* Match the outline style applied to companies */
+    outline-offset: -2px;
+    margin-right: 5px;
+}
+
+.filledExampleMagenta {
+    width: 20px;
+    height: 20px;
+    background-color: #f5dcee;
+    outline-offset: -2px;
+    margin-right: 5px;
+ }
+
+.filledExampleCyan {
+    width: 20px;
+    height: 20px;
+    background-color: #a4f1ea;
+    outline-offset: -2px;
+    margin-right: 5px;
+}
+
+.filledExampleOrange {
+    width: 20px;
+    height: 20px;
+    background-color: #ffc384;
+    outline-offset: -2px;
+    margin-right: 5px;
+}
+  
+
+

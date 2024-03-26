@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunt Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Round 2: Accept Offer</h1>
+    </div>
+    <p class="para">Out of the 3 companies you recorded interviews for, none have extended you an offer. </p>
+    <div class="content-container">
+        <div id="selectedForInterview">
+            <!-- Companies that select you for an interview will be displayed here -->
+        </div>
+        
+    </div>
+    <p class="para fade-in-slow" style="opacity: 0 ;" >What went wrong? </p>
+
+    <div>
+        <button id="tryBtn">Try Again</button> 
+        <button id="findBtn">Find Out</button> 
+    </div>
+    
+
+
+    <div id="congratulations">
+
+    </div>
+  
+    
+    
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+        const selectedForInterview = document.getElementById('selectedForInterview');
+        // Retrieve the selected companies from local storage
+        const interviewedCompanies = JSON.parse(localStorage.getItem('round2Interviews'));
+        const offeredCompanies = [];
+        const congratulations = document.getElementById('congratulations');
+
+        if (interviewedCompanies && interviewedCompanies.length > 0) {
+            const displayCompanies = () => {
+                interviewedCompanies.forEach(company => {
+                    const div = document.createElement('div');
+                    div.textContent = company;
+                    div.className = 'company fade-in'; // Apply fade-in class here
+                    selectedForInterview.appendChild(div);
+                });
+
+            };
+
+            displayCompanies(); // Initiate the process
+
+        } else {
+            // Handle case where no companies were selected or stored
+            selectedForInterview.textContent = 'No companies selected.';
+        }
+
+        document.getElementById('tryBtn').addEventListener('click', () => {
+            window.location.href = 'resume2.html';
+        });
+        document.getElementById('findBtn').addEventListener('click', () => {
+            window.location.href = 'explanation.html';
+        });
+    });
+
+
+
+
+
+
+        
+
+</script>
+        
+    
+    
+</body>
+</html>

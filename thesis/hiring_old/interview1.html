@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunt Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Round 1: Interview Stage</h1>
+    </div>
+    <p class="para">Out of the 10 companies you applied to, 5 have offered you an interview: </p>
+    <div class="content-container">
+        <div id="selectedCompaniesList">
+            <!-- Selected companies will be displayed here -->
+        </div>
+
+        <p class="para fade-in-slow" style="opacity: 0 ; margin-top:30px" >You meet with human representatives at each of the five companies—some in-person and some over a video call.</p>
+        
+        <button id="nextBtn">Next</button>       
+        
+    </div>
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const selectedCompaniesList = document.getElementById('selectedCompaniesList');
+        // Retrieve the selected companies from local storage
+        const selectedCompanies = JSON.parse(localStorage.getItem('round1Resumes'));
+        const interviewedCompanies = []; // Array to store highlighted companies
+
+        setTimeout(() => { // Introduce delay before displaying companies
+            if (selectedCompanies && selectedCompanies.length > 0) {
+                selectedCompanies.forEach(company => {
+                    const div = document.createElement('div');
+                    div.textContent = company;
+                    div.className = 'company fade-in'; // Apply fade-in class here
+                    selectedCompaniesList.appendChild(div);
+                });
+
+                // Randomly select 5 for highlighting
+                const selectedIndices = new Set();
+                while(selectedIndices.size < 5) {
+                    const randomIndex = Math.floor(Math.random() * selectedCompanies.length);
+                    selectedIndices.add(randomIndex);
+                }
+
+                // Highlight selected companies after an additional delay
+                setTimeout(() => {
+                    Array.from(selectedCompaniesList.children).forEach((div, index) => {
+                        if (selectedIndices.has(index)) {
+                            div.classList.add('highlight'); // This will now trigger the highlight animation
+                            interviewedCompanies.push(div.textContent); // Add company name to array
+                        }
+                    });
+                }, 1000); // Adjust this delay as needed. Here, it waits an additional 1 second after the companies have faded in.
+            } else {
+                const noSelection = document.createElement('div');
+                noSelection.textContent = 'No companies selected.';
+                selectedCompaniesList.appendChild(noSelection);
+            }
+        }, 0); // Initial delay before companies start to fade in
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            
+            // Save the interviewed with companies to local storage
+            localStorage.setItem('round1Interviews', JSON.stringify(interviewedCompanies));
+            // Navigate to offer1.html
+            window.location.href = 'offer1.html';
+        
+            
+        });
+
+        });
+
+        
+    
+
+</script>
+        
+    
+    
+</body>
+</html>

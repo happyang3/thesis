@@ -1,0 +1,170 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.para{
+    font-size: 20px; /* Bigger font size for the button */
+    text-align: center;
+    width: 100%
+}
+
+.paraLong{
+    font-size: 20px; /* Bigger font size for the button */
+    text-align: center;
+    width: 70%;
+}
+
+#startGameBtn{
+    font-size: 16px; /* Bigger font size for the button */
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: aliceblue;
+}
+
+.align-center{
+    align-items: center;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    flex-grow: 0;
+    overflow:hidden;
+}
+
+
+#nextBtn{
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: aliceblue;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    animation: fadeIn 2s ease-out 0s forwards; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 2s ease-out;
+}
+
+
+canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block; /* Prevent scrollbar */
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.sky {
+    background-color: skyblue;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: left;
+    align-items: flex-end;
+  }
+  
+.road {
+    width: 100%;
+    height: 35vh;
+    background-color: gray;
+    clip-path: polygon(25% 0, 65% 0, 100% 100%, 25 100%);
+    position: absolute;
+}
+
+.left-sidewalk {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(239, 231, 177);
+    clip-path: polygon(0% 85%, 25% 65%, 28% 65%, 0% 92%);
+    position: absolute;
+}
+
+.right-sidewalk {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(239, 231, 177);
+    clip-path: polygon(61% 65%, 65% 65%, 100% 100%, 90% 100%);
+    position: absolute;
+}
+
+.yellow-lines {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(242, 221, 37);
+    clip-path: polygon(43% 65%, 44% 65%, 34% 100%, 31% 100%);
+    position: absolute;
+}
+  
+.left-buildings {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(241, 123, 64);
+    clip-path: polygon(0% 20%, 25% 40%, 25% 65%, 0% 85%);
+    position: absolute;
+
+}
+
+
+.right-buildings {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(227, 64, 64);
+    clip-path: polygon(65% 40%, 100% 20%, 100% 100%, 65% 65%);
+    position: absolute;
+}
+
+.hover-outline {
+    position: relative;
+  }
+  
+.hover-outline:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 12%; /* Center horizontally */
+    top: 50%; /* Adjust based on element's height */
+    transform: translateX(-50%); /* Center based on its own width */
+    z-index: 1000; /* Ensure it's above other elements */
+    background-color: black;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+  
+  
+.hover-outline:hover {
+    border: 5px solid yellow; /* Change this color to your preferred contrasting color */
+    z-index: 1000;
+}
+  
+
+  
+

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot Simulator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Round 2: Hallucinating Behavior</h1>
+        <div id="instructionsContainer"> 
+            <p class="paraLongInstruct"> Below, you can ask the chatbot to do various tasks by dragging a prompt from the 
+                <span style="color: #1ab4c5;"><strong>Prompt Bank</strong></span> to the 
+                <span style="color: #7baf27;"><strong>Prompt Window</strong></span>. 
+                The chatbot's response to the prompt will appear in the 
+                <span style="color: #dfa32b;"><strong>Response Window</strong></span>.
+                <strong>In this round, the chatbot is behaving in strange and unexpected ways. </strong>
+                Try out at least three of the prompts to continue.
+            </p>
+            <button id="nextBtn" style="visibility: hidden;">Next</button>
+        </div>
+        
+    </div>
+    <div id="chatbotContainer">
+        <div id="leftContainer">
+            <div id="chatbotResponseWindow" class="chat-window">
+                <div class="static-content">
+                    <p class="para" ><strong>Response Window</strong></p>
+                </div>
+                <div id="responseHolder"></div>
+            </div>
+            <div id="chatbotPromptWindow" class="prompt-window" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="static-content">
+                    <p class="para"><strong>Prompt Window</strong> - Drag and drop a prompt here</p>
+                </div>
+                <div id="promptHolder">
+                </div>
+            </div>
+        </div>
+        <div id="promptBank" class="prompt-bank">
+            <p class="para"><strong>Prompt Bank</strong></p>
+            <!-- Prompts go here -->
+            <div id="poem" class="prompt" draggable="true" ondragstart="drag(event)" data-response="Sure, I'll be happy to recite the poem 'Harlem' by Langston Hughes for you:
+            'Harlem
+            What happens to a dream deferred?
+            Does it dry up
+            like a raisin in the sun?
+            Or fester like a sore—
+            And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—
+            like a syrupy sweet?
+            Maybe it just sags
+            like a heavy load.
+            Or does it explode?
+            In the attitude of the head,
+            the turning of a page,
+            the sway of the hips,
+            the flick of the wrist,
+            the harsh ride of the drums,
+            the soft ticking of the piano.
+            What happens to a dream deferred?
+            It festers,
+            it sags,
+            it explodes.'
+            I hope you enjoyed the recitation of 'Harlem' by Langston Hughes. It's a powerful and thought-provoking poem that explores the idea of what happens to a dream that is not fulfilled. The imagery and language used in the poem are vivid and evocative, and they help to convey the idea that a deferred dream can have negative consequences.">
+                Please recite the poem "Harlem" by Langston Hughes</div>
+            <div id="restaurant" class="prompt" draggable="true" ondragstart="drag(event)" data-response="Response for Prompt 2">
+                What are some good pizza joints in New York City?</div>
+            <div id="logic" class="prompt" draggable="true" ondragstart="drag(event)" data-response="Sure, I'd be happy to help you with that!
+            To prove that we always reach 1 for any positive starting number, we can use mathematical induction. Let's assume that the statement is true for some arbitrary positive number k, that is, we can reach 1 starting from k by repeatedly following the given rules.
+            Now, let's consider the next number, k+1.
+            If k+1 is even, we divide it by 2 to get k+1/2. Since k+1/2 is smaller than k+1, we can repeat the process and continue to divide by 2 until we reach 1.
+            If k+1 is odd, we multiply it by 3 and add 1 to get 3k+4. Now, 3k+4 is larger than k+1, so we can repeat the process and continue to multiply by 3 and add 1 until we reach 1.
+            Therefore, by mathematical induction, we can conclude that starting from any positive number, we will always reach 1 by repeatedly following the given rules.
+            I hope this helps! Let me know if you have any other questions">
+            Solve the following math problem: Start with any positive number. If the number is even, divide it by 2. If the number is odd, multiply by 3 then add 1. Continue this process. Prove that you always reach 1 for any positive starting number.</div>
+        </div>
+    </div>
+    
+<script>
+    function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id); // Transfer the ID of the draggable element
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    var promptElement = document.getElementById(data);
+
+    // Determine the drop target. If the drop is directly on another prompt, find the promptHolder or chatbotPromptWindow.
+    var target = ev.target;
+    while (target && target.id !== "promptBank" && target.id !== "promptHolder" && target.id !== "chatbotPromptWindow" && target.className !== "prompt") {
+        target = target.parentNode;
+    }
+
+    if (target.className === "prompt" && target.parentNode.id === "promptHolder") {
+        // If dropped on another prompt, treat the target as the promptHolder
+        target = document.getElementById("promptHolder");
+    }
+
+    if (target && target.id === "promptBank") {
+        // Handling prompt being moved back to the prompt bank
+        document.getElementById("promptBank").appendChild(promptElement);
+        document.getElementById("responseHolder").innerHTML = ""; // Clear the response window
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId); // Stop the scrolling text effect
+            timeoutId = null; // Reset the timeoutId
+        }
+    } else if (target && (target.id === "promptHolder" || target.id === "chatbotPromptWindow")) {
+        // If there's an existing prompt in the prompt window, move it back to the prompt bank
+        var existingPrompts = document.getElementById("promptHolder").childNodes;
+        for (var i = existingPrompts.length - 1; i >= 0; i--) {
+            document.getElementById("promptBank").appendChild(existingPrompts[i]);
+        }
+
+        // Append the new prompt to the promptHolder
+        document.getElementById("promptHolder").appendChild(promptElement);
+
+        // Update the response window
+        // document.getElementById("responseHolder").innerHTML = promptElement.getAttribute("data-response");
+        displayTextLetterByLetter(promptElement.getAttribute("data-response"), "responseHolder", 10); // Adjust the interval (50ms) as needed
+
+        uniquePrompts.add(data);
+
+        // Check if three unique prompts have been added
+        if (uniquePrompts.size >= 3) {
+            // Make the Next button visible
+            document.getElementById("nextBtn").style.visibility = "visible";
+        }
+    }
+}
+
+let timeoutId = null; // Holds the current timeout to allow for cancellation
+
+function displayTextLetterByLetter(text, elementId, intervalMs) {
+    let i = 0;
+    const targetElement = document.getElementById(elementId);
+    targetElement.innerHTML = ""; // Clear existing content
+
+    // Convert newline characters to <br> tags for proper HTML rendering
+    text = text.replace(/\n/g, '<br>');
+
+    // Clear any ongoing animation before starting a new one
+    if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+    }
+
+    function addLetter() {
+        if (i < text.length) {
+            // Handle adding <br> tags properly
+            if (text.substr(i, 4) === '<br>') {
+                targetElement.innerHTML += '<br>';
+                i += 4; // Skip past the <br> tag
+            } else {
+                targetElement.innerHTML += text.charAt(i);
+                i++;
+            }
+            timeoutId = setTimeout(addLetter, intervalMs); // Schedule next letter
+        } else {
+            timeoutId = null; // Reset timeoutId when animation is done
+        }
+    }
+
+    addLetter(); // Start adding letters
+}
+
+let uniquePrompts = new Set();
+
+
+// Setup event listeners for the promptBank and chatbotPromptWindow
+document.getElementById("chatbotPromptWindow").addEventListener('drop', drop);
+document.getElementById("chatbotPromptWindow").addEventListener('dragover', allowDrop);
+
+document.getElementById("promptBank").addEventListener('drop', drop);
+document.getElementById("promptBank").addEventListener('dragover', allowDrop);
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+            
+    // Navigate to temperature.html
+    window.location.href = 'temperature.html';
+
+    
+});
+
+
+
+</script>
+</body>
+</html>

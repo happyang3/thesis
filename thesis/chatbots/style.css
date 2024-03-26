@@ -1,0 +1,242 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+
+.para{
+    font-size: 20px; /* Bigger font size for the button */
+    text-align: center;
+    width: 100%
+}
+
+.paraLong{
+    font-size: 20px; /* Bigger font size for the button */
+    text-align: center;
+    width: 70%;
+}
+
+.paraLongInstruct{
+    font-size: 16px; /* Bigger font size for the button */
+    text-align: center;
+    width: 85%;
+    margin: auto;
+    margin-right: 0px;
+}
+
+.align-center{
+    align-items: center;
+}
+
+#startGameBtn{
+    font-size: 16px; /* Bigger font size for the button */
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: aliceblue;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    flex-grow: 0;
+}
+
+
+.prompt {
+    margin: 0; /* Remove margin from prompts */
+    /* Ensure that prompts don’t expand the container */
+}
+  
+#chatbotContainer {
+    display: flex;
+    height: 100vh; /* Use 100% of the viewport height */
+    margin: 0;
+    flex-grow: 0;
+    max-height: 100vh;
+}
+
+
+#leftContainer {
+    display: flex;
+    flex-direction: column;
+    width: 70vw; 
+    margin-right: 0px; 
+    overflow: hidden;
+    margin-top: 10px;
+    flex-grow: 0;
+    max-width: 70vw;
+}
+
+  
+.chat-window {
+    margin: 10px;
+    padding: 10px;
+    padding-bottom: 30px;
+    overflow-y: auto;
+    background-color: #f5e7cb;
+    flex-basis: 50vh;
+    max-height: 50vh;
+    max-width: 70vw;
+    flex-grow: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-window-temp {
+    margin: 10px;
+    padding: 10px;
+    padding-bottom: 30px;
+    overflow-y: auto;
+    background-color: #f5e7cb;
+    flex-basis: 46vh;
+    max-height: 46vh;
+    flex-grow: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.prompt-window{
+    margin: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #dff6ba;
+    flex-basis: 15vh; /* Gives an initial height to the prompt window */
+    max-height: 15vh;
+    max-width: 70vw;
+    position: relative;
+    flex-grow: 0;
+}
+
+.prompt-window-temp{
+    margin: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #dff6ba;
+    flex-basis: 14vh; /* Gives an initial height to the prompt window */
+    max-height: 14vh;
+    position: relative;
+    flex-grow: 0;
+}
+
+.static-content {
+    z-index: 2; /* Ensure static content is above promptHolder */
+    /* Style as needed to make the text visible and well-positioned */
+}
+  
+#promptHolder {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1; /* Ensures it's behind the static content but above the prompt window background */
+}
+
+#responseHolder {
+    padding-left: 30px;
+    padding-top: 10px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    overflow-y: scroll;
+    max-height: 80%;
+    flex-grow: 0;
+}
+  
+.prompt-bank {
+    flex-grow: 1;
+    background-color: #9edee5;
+    padding: 10px;
+    margin: 10px;
+    overflow-y: auto;
+    margin-top: 20px;
+    max-height: 72vh;
+    max-width: 30vw
+}
+
+.prompt-bank-temp {
+    flex-grow: 1;
+    background-color: #9edee5;
+    padding: 10px;
+    margin: 10px;
+    overflow-y: auto;
+    margin-top: 20px;
+    max-height: 67vh;
+    max-width: 30vw;
+}
+
+/* Add or adjust other styles as needed */
+
+
+.prompt {
+    padding: 10px;
+    margin: 10px;
+    background-color: white;
+    border: 1px solid #ccc;
+    cursor: grab;
+}
+
+
+.prompt, .prompt-window {
+    word-wrap: break-word; /* Ensure that long words do not overflow */
+}
+
+#nextBtn{
+    font-size: 16px;
+    padding: 10px 20px;
+    opacity: 0; /* Start invisible */
+    background-color: aliceblue;
+    align-self: flex-end; /* This ensures the button aligns to the right */
+    margin: 0 auto; /* Removes margin adjustments that could offset alignment */
+    animation: fadeIn 2s ease-out 0s forwards; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 2s ease-out;
+}
+
+#instructionsContainer {
+    display: flex;
+    margin: 0;
+}
+
+#temperatureControl {
+    margin-top: 10px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#temperatureSlider {
+    width: 20%;
+}
+
+#tooltip {
+    display: none; /* Hidden by default */
+    position: absolute;
+    background-color: #eee9e9;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    color: #333;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.highlight{
+    color:red;
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot Simulator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Round 1: Intended Behavior</h1>
+        <div id="instructionsContainer"> 
+            <p class="paraLongInstruct"> Below, you can ask the chatbot to do various tasks by dragging a prompt from the 
+                <span style="color: #1ab4c5;"><strong>Prompt Bank</strong></span> to the 
+                <span style="color: #7baf27;"><strong>Prompt Window</strong></span>. 
+                The chatbot's response to the prompt will appear in the 
+                <span style="color: #dfa32b;"><strong>Response Window</strong></span>.
+                <strong>In this round, the chatbot is outputting hypothetical responses that are truthful and coherent, as 
+                    <em>intended</em> by the company that engineered it. </strong>
+                Try out at least three of the prompts to continue.
+            </p>
+            <button id="nextBtn" style="visibility: hidden;">Next</button>
+        </div>
+        
+    </div>
+    <div id="chatbotContainer">
+        <div id="leftContainer">
+            <div id="chatbotResponseWindow" class="chat-window">
+                <div class="static-content">
+                    <p class="para" ><strong>Response Window</strong></p>
+                </div>
+                <div id="responseHolder"></div>
+            </div>
+            <div id="chatbotPromptWindow" class="prompt-window" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="static-content">
+                    <p class="para"><strong>Prompt Window</strong> - Drag and drop a prompt here</p>
+                </div>
+                <div id="promptHolder">
+                </div>
+            </div>
+        </div>
+        <div id="promptBank" class="prompt-bank">
+            <p class="para"><strong>Prompt Bank</strong></p>
+            <!-- Prompts go here -->
+            <div id="poem" class="prompt" draggable="true" ondragstart="drag(event)" data-response="Harlem
+            by Langston Hughes
+            What happens to a dream deferred?
+            Does it dry up like a raisin in the sun?
+            Or fester like a sore—And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—like a syrupy sweet?
+            Maybe it just sags like a heavy load.
+            Or does it explode?
+            I hope this recitation of Langston Hughes' famous poem 'Harlem' was helpful. If you have any other questions or requests, feel free to ask!"
+            '>
+                Please recite the poem "Harlem" by Langston Hughes</div>
+            <div id="restaurant" class="prompt" draggable="true" ondragstart="drag(event)" data-response="There are many great pizza joints in New York City! Here are some popular options:
+            1. Lombardi's Pizza - This historic pizzeria in Little Italy has been serving up delicious pies since 1905.
+            2. Joe's Pizza - Located in Greenwich Village, Joe's has been a NYC staple since 1975 and is known for its classic, cheesy slices.
+            3. Patsy's Pizzeria - This classic pizzeria in East Harlem has been around since 1933 and is known for its crispy, flavorful crust.
+            4. Artichoke Basille's Pizza - This popular chain has several locations throughout the city and is known for its thick, crispy crust and creative toppings.
+            5. Roberta's - This trendy pizzeria in Bushwick has a cult following for its creative toppings and wood-fired pizzas.
+            6. Lucali - This cozy pizzeria in Carroll Gardens has a loyal following for its classic, thin-crust pies and cozy atmosphere.
+            7. Paulie Gee's - This popular pizzeria in Greenpoint has a vintage, old-school vibe and serves up delicious, wood-fired pizzas.
+            8. Ops Pizza - This pizzeria in Bushwick has a great selection of toppings and a fun, lively atmosphere.
+            9. Scarr's Pizza - This pizzeria in the East Village has a retro, old-school vibe and serves up delicious, thin-crust pizzas.
+            10. Pizza Grosso - This pizzeria in Williamsburg has a great selection of toppings and a fun, casual atmosphere.
+            These are just a few of the many great pizza joints in New York City - there are countless others to explore and enjoy!">
+                What are some good pizza joints in New York City?</div>
+            <div id="logic" class="prompt" draggable="true" ondragstart="drag(event)" data-response="Response for Prompt 3">
+                Solve the following math problem: Start with any positive number. If the number is even, divide it by 2. If the number is odd, multiply by 3 then add 1. Continue this process. Prove that you always reach 1 for any positive starting number.</div>
+        </div>
+    </div>
+    
+<script>
+    function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id); // Transfer the ID of the draggable element
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    var promptElement = document.getElementById(data);
+
+    // Determine the drop target. If the drop is directly on another prompt, find the promptHolder or chatbotPromptWindow.
+    var target = ev.target;
+    while (target && target.id !== "promptBank" && target.id !== "promptHolder" && target.id !== "chatbotPromptWindow" && target.className !== "prompt") {
+        target = target.parentNode;
+    }
+
+    if (target.className === "prompt" && target.parentNode.id === "promptHolder") {
+        // If dropped on another prompt, treat the target as the promptHolder
+        target = document.getElementById("promptHolder");
+    }
+
+    if (target && target.id === "promptBank") {
+        // Handling prompt being moved back to the prompt bank
+        document.getElementById("promptBank").appendChild(promptElement);
+        document.getElementById("responseHolder").innerHTML = ""; // Clear the response window
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId); // Stop the scrolling text effect
+            timeoutId = null; // Reset the timeoutId
+        }
+    } else if (target && (target.id === "promptHolder" || target.id === "chatbotPromptWindow")) {
+        // If there's an existing prompt in the prompt window, move it back to the prompt bank
+        var existingPrompts = document.getElementById("promptHolder").childNodes;
+        for (var i = existingPrompts.length - 1; i >= 0; i--) {
+            document.getElementById("promptBank").appendChild(existingPrompts[i]);
+        }
+
+        // Append the new prompt to the promptHolder
+        document.getElementById("promptHolder").appendChild(promptElement);
+
+        // Update the response window
+        // document.getElementById("responseHolder").innerHTML = promptElement.getAttribute("data-response");
+        displayTextLetterByLetter(promptElement.getAttribute("data-response"), "responseHolder", 10); // Adjust the interval (50ms) as needed
+
+        uniquePrompts.add(data);
+
+        // Check if three unique prompts have been added
+        if (uniquePrompts.size >= 3) {
+            // Make the Next button visible
+            document.getElementById("nextBtn").style.visibility = "visible";
+        }
+    }
+}
+
+let timeoutId = null; // Holds the current timeout to allow for cancellation
+
+function displayTextLetterByLetter(text, elementId, intervalMs) {
+    let i = 0;
+    const targetElement = document.getElementById(elementId);
+    targetElement.innerHTML = ""; // Clear existing content
+
+    // Convert newline characters to <br> tags for proper HTML rendering
+    text = text.replace(/\n/g, '<br>');
+
+    // Clear any ongoing animation before starting a new one
+    if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+    }
+
+    function addLetter() {
+        if (i < text.length) {
+            // Handle adding <br> tags properly
+            if (text.substr(i, 4) === '<br>') {
+                targetElement.innerHTML += '<br>';
+                i += 4; // Skip past the <br> tag
+            } else {
+                targetElement.innerHTML += text.charAt(i);
+                i++;
+            }
+            timeoutId = setTimeout(addLetter, intervalMs); // Schedule next letter
+        } else {   
+            timeoutId = null; // Reset timeoutId when animation is done
+        }
+    }
+
+    addLetter(); // Start adding letters
+}
+
+let uniquePrompts = new Set();
+
+
+// Setup event listeners for the promptBank and chatbotPromptWindow
+document.getElementById("chatbotPromptWindow").addEventListener('drop', drop);
+document.getElementById("chatbotPromptWindow").addEventListener('dragover', allowDrop);
+
+document.getElementById("promptBank").addEventListener('drop', drop);
+document.getElementById("promptBank").addEventListener('dragover', allowDrop);
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+            
+    // Navigate to temperature.html
+    window.location.href = 'hallucinating.html';
+
+    
+});
+
+
+
+</script>
+</body>
+</html>

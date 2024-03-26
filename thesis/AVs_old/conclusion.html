@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Viewport SVG</title>
+<style>
+  .svg-container {
+    display: grid;
+    position: relative;
+    background-color: skyblue; 
+  }
+  .svg-container::before {
+    width: 100%;
+    grid-area: 1 / 1 / 2 / 2;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    content: "";
+  }
+  svg {
+    grid-area: 1 / 1 / 2 / 2;
+  }
+ 
+  text {
+    visibility: hidden; /* Hide text labels by default */
+    font-family: Courier, monospace;
+    font-size: 5px;
+    pointer-events: none; /* Ensures the text doesn't interfere with mouse events */
+    fill: rgb(0, 0, 0); /* Text color */
+  }
+
+  .visible-text{
+    visibility: visible !important; /* Override to make specific text always visible */
+    font-size: 2px; /* Adjust size as needed */
+    fill: black; /* Text color */
+    font-family: Arial, sans-serif;
+  }
+
+  /* Other styles here */
+</style>
+</head>
+<body>
+
+<div class="svg-container">
+  <svg viewBox="0 0 160 90" >
+
+    <!-- White Rectangle -->
+    <rect x="40" y="5" width="80" height="26" fill="white" />
+    <!-- Text in Rectangle -->
+    <text x="42" y="10" fill="black" class="visible-text" font-size="5">
+      <tspan x="42" dy="0" fill="black" class="visible-text" font-size="5">
+       When the red truck drove between your car and the blue car, it OCCLUDED the blue   </tspan>
+      <!-- Adjust 'dy' to manage the distance between lines -->
+    <tspan x="42" dy="3" fill="black" class="visible-text" font-size="5">
+       car—that is, it overlapped with it, covering it from view. Then when the blue car
+         </tspan>
+    <tspan x="42" dy="3" fill="black" class="visible-text" font-size="5">
+        reappeared after the red truck passed, the AI computer vision system labeled it as a
+       </tspan>
+    <tspan x="42" dy="3" fill="black" class="visible-text" font-size="5">
+        new car it had never seen before ("Car #3") instead of recognizing it as the same car 
+      </tspan>
+    <tspan x="42" dy="3" fill="black" class="visible-text" font-size="5">
+        it had been tracking as "Car #1" this whole time.
+    </tspan>  
+    <tspan x="42" dy="3" fill="black" class="visible-text" font-size="5">
+        
+    </tspan> 
+    <tspan x="42" dy="3" fill="black" class="visible-text" font-size="5">
+        
+      </tspan> 
+    </text>
+
+    <!-- Next Button Background (simulated button) -->
+    <rect id="nextButton" x="97" y="24" width="9" height="4.5" fill="lightgray" rx="1" ry="1" cursor="pointer"/>
+    <!-- Next Button Text -->
+    <text x="99" y="27" class="visible-text" font="Arial, sans-serif" font-size="4" fill="black" cursor="pointer">
+      Finish
+    </text>
+
+    <!-- Back Button Background (simulated button) -->
+    <rect id="backButton" x="54" y="24" width="9" height="4.5" fill="lightgray" rx="1" ry="1" cursor="pointer"/>
+    <!-- Back Button Text -->
+    <text x="56.5" y="27" class="visible-text" font="Arial, sans-serif" font-size="4" fill="black" cursor="pointer">
+      Back
+    </text>
+
+    <!-- Road Shape -->
+    <path id="road" d="M 77.5,45 L 145,90 L -20,90 Z" fill="gray" />
+    <text x="35" y="78">Road #1</text>
+
+    <!-- Yellow Line -->
+    <path id="yellow-line" d="M 77.5,45 L 50,90 L 54,90 Z" fill="rgb(242, 221, 37)" />
+    <text x="15" y="80">Lane Line #1</text>
+
+    <!-- Road Shape -->
+    <path id="road" d="M 0,67 L 160,67 L 160,58 L 0,58 Z" fill="gray" />
+    <text x="23" y="78">Road #2</text>
+    
+    <!-- Left Sidewalk -->
+    <path id="left-sidewalk" d="M -40,90 L 20,67 L 30,67 L -20,90 Z" fill="rgb(239, 231, 177)" />
+    <text x="17" y="80">Sidewalk #1</text>
+
+    <!-- Grass -->
+    <path id="grass" d="M -40,90 L 20,67 L 0,67 Z" fill="rgb(120, 205, 64)" />
+
+    <!-- Right Sidewalk -->
+    <path id="right-sidewalk" d="M 118,67 L 160,90 L 145,90 L 110.5,67 Z" fill="rgb(239, 231, 177)" />
+    <text x="80" y="85">Sidewalk #2</text>
+
+    <!-- Grass -->
+    <path id="grass" d="M 160,90 L 118,67, L 160,67 Z" fill="rgb(120, 205, 64)" />
+
+    <!-- Grass -->
+    <path id="grass" d="M 101.5,58 L 160,58 L 160,45 L 77.5,45  Z" fill="rgb(120, 205, 64)" />
+
+    <!-- Right Sidewalk Cont. -->
+    <path id="right-sidewalk-cont" d="M 101.5,58 L 97,58 L 77.5,45 Z" fill="rgb(239, 231, 177)" />
+    <text x="85" y="47">Sidewalk #4</text>
+
+    <!-- Left Crosswalk -->
+    <path id="left-crosswalk" d="M 43.5,58 L 49.5,58 L 30,67 L 20,67 Z" fill="white" />
+    <text x="15" y="75">Crosswalk #1</text> 
+    
+    <!-- Right Crosswalk -->
+    <path id="right-crosswalk" d="M 101.5,58 L 97,58 L 110.5,67 L 118,67 Z" fill="white" />
+    <text x="105" y="52">Crosswalk #2</text>
+
+    <!-- Road Stripes -->
+    <path id="no-show" d="M 0,65.5 L 160,65.5 L 160,64 L 0,64 Z" fill="gray" />
+    <path id="no-show" d="M 0,62.5 L 160,62.5 L 160,61 L 0,61 Z" fill="gray" />
+    <path id="no-show" d="M 0,59.8 L 160,59.8 L 160,58.5 L 0,58.5 Z" fill="gray" />
+
+    <!-- White Stop Line -->
+    <path id="white-stop-line" d="M 64.2,74 L 116.5,74 L 122,78 L 62,78 Z" fill="white" />
+    <text x="70" y="85">White Stop Line #1</text>
+
+    <!-- Left Building -->
+    <g id="left-building">
+        <path id="" d="M 77.5,45 L 43,58 L 43,35 L 77.5,42 Z" fill="rgb(241, 123, 64)" />
+        <path id="" d="M 43,58 L 43,35 L 0,35 L 0,58 Z" fill="rgb(255, 149, 96)" />
+    </g>
+    <text x="13" y="42">Building #3</text>
+
+    <!-- Left Sidewalk Cont. -->
+    <path id="left-sidewalk-cont" d="M 43.5,58 L 49.5,58 L 77.5,45 Z" fill="rgb(239, 231, 177)" />
+    <text x="23" y="40">Sidewalk #3</text>
+
+
+    <!-- Blue Car -->
+    <g id="car">
+        <path id="" d="M 77,44 L 80,44 L 81,47 L 76,47 Z" fill="darkblue" />
+        <path id="" d="M 77,47 L 77.5,47 L 77.5,47.7 L 77,47.7 Z" fill="black" />
+        <path id="" d="M 80,47 L 79.5,47 L 79.5,47.7 L 80,47.7 Z" fill="black" />
+    </g>
+    <text id="problem" x="75" y="40">Car #3</text>
+
+    <!-- Red truck -->
+    <g id="red-truck">
+        <path id="" d="M 20,45 L 50,45 L 50,60 L 20,60 Z" fill="darkred" />
+        <path id="" d="M 13,50 L 20,50 L 20,60 L 13,60 Z" fill="darkgray" />
+        <circle cx="27" cy="60" r="3" fill="black"/>
+        <circle cx="43" cy="60" r="3" fill="black"/>
+    </g>
+    <text x="20" y="42">Truck #1</text>
+
+
+  </svg>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const nextButton = document.getElementById('nextButton');
+  
+    nextButton.addEventListener('click', function() {
+      window.location.href = 'finish.html';
+    });
+  });
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const nextButton = document.getElementById('backButton');
+  
+    nextButton.addEventListener('click', function() {
+      window.location.href = 'uncovered.html';
+    });
+  });
+  </script>
+  
+</body>
+</html>

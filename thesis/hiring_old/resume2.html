@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunt Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Round 2: Resumes and Cover Letters</h1>
+    </div>
+    <p class="para">Please select 10 companies below to send your resume and cover letter to. </p>
+    <div id="companiesList"></div>
+    <div class="footer">
+        <span id="selectedCount">0 Selected</span>
+        <button id="submitBtn">Submit Resumes</button>
+    </div>
+   
+   
+   <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const companies = ['Bloomify', 'Blossom Hub Ventures', 'Canopy Crafts', 'Daisy Bell Labs', 'EcoSprig', 
+                            'Fernify', 'FloraFusion', 'The Grove', 'Lavender Bank', 'Leafy Luxe', 'Nectar Network',
+                            'Petal Partners', 'PetalSoft', 'Red Bean Solutions', 'Rooted Co.', 'Seedify', 'Sprout', 'Stemly',
+                            'Thornex', 'Vinegenix'];
+        const companiesList = document.getElementById('companiesList');
+        const selectedCount = document.getElementById('selectedCount');
+        let selectedCompanies = [];
+
+        companies.forEach(company => {
+            let btn = document.createElement('button');
+            btn.textContent = company;
+            btn.addEventListener('click', () => {
+                if (selectedCompanies.includes(company)) {
+                    selectedCompanies = selectedCompanies.filter(c => c !== company);
+                    btn.classList.remove('selected');
+                } else if (selectedCompanies.length < 10) {
+                    selectedCompanies.push(company);
+                    btn.classList.add('selected');
+                }
+                selectedCount.textContent = `${selectedCompanies.length} Selected`; // Update the counter
+            });
+            companiesList.appendChild(btn);
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            if (selectedCompanies.length === 10) {
+                // Save the selected companies to local storage
+                localStorage.setItem('round2Resumes', JSON.stringify(selectedCompanies));
+                // Navigate to interview2.html
+                window.location.href = 'interview2.html';
+            } else {
+                alert('Please select exactly 10 companies.');
+            }
+        });
+    
+    });
+
+    </script>
+</body>
+</html>

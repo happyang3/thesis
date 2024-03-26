@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunt Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Offers</h1>
+    </div>
+    <div id="result" style="margin-bottom:20px">
+
+    </div>
+    <div class="content-container">
+        <div id="selectedForInterview">
+            <!-- Companies that select you for an interview will be displayed here -->
+        </div>
+        
+    </div>
+
+    <p class="para" id="acceptMessage" ></p>
+
+    <div id="accept" style="margin-bottom:20px"></div>
+
+    <!-- 
+    <p class="para fade-in-slow" style="opacity: 0 ;" >What led to this outcome? </p>
+        <div>
+            <button id="tryBtn">Try Again</button> 
+            <button id="findBtn">Find Out</button> 
+        </div>
+  -->
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const selectedForInterview = document.getElementById('selectedForInterview');
+        const result = document.getElementById('result');
+        const accept = document.getElementById('accept');
+        const acceptMessage = document.getElementById('acceptMessage');
+        // Retrieve the selected companies from local storage
+        const interviewedCompanies = JSON.parse(localStorage.getItem('round2Interviews'));
+        
+        // Check if we should highlight the companies (simulate offers)
+        const highlightOffers = Math.random() < 0.5;
+        
+        if (interviewedCompanies && interviewedCompanies.length > 0) {
+            const displayCompanies = () => {
+                interviewedCompanies.forEach(company => {
+                    const div = document.createElement('div');
+                    div.textContent = company;
+                    div.className = 'company fade-in'; // Apply fade-in class here
+                    
+                    // If highlightOffers is true, apply additional styling for offers
+                    if (highlightOffers) {
+                        // div.style.backgroundColor = 'lightgreen'; // Highlighting in green to indicate offers
+                        div.classList.add('highlight');
+                        // div.style.fontWeight = 'bold'; // Optional: make the text bold
+                        div.addEventListener('click', acceptOffer);
+                        acceptMessage.textContent = 'Click one of them to accept the offer!'
+                        localStorage.setItem('round2Offers', JSON.stringify(interviewedCompanies));
+                        
+                    }
+                    selectedForInterview.appendChild(div);
+                });
+                if (!highlightOffers) {
+                    const text = document.createElement('p')
+                    text.classList.add('para');
+                    text.classList.add('fade-in-slow');
+                    text.style.opacity = 0;
+                    text.textContent = 'What led to this outcome?';
+                    accept.appendChild(text);
+
+                    const buttonDiv = document.createElement('div');
+                    buttonDiv.id = 'buttonDiv';
+                    const tryButton = document.createElement('button');
+                    tryButton.id = 'tryBtn';
+                    tryButton.textContent = 'Try Again';
+                    const findButton = document.createElement('button');
+                    findButton.id = 'findBtn';
+                    findButton.textContent = 'Find Out';
+                    buttonDiv.appendChild(tryButton);
+                    buttonDiv.appendChild(findButton);
+                    accept.appendChild(buttonDiv);
+
+                    localStorage.setItem('round2Offers', JSON.stringify([]));
+
+                    document.getElementById('tryBtn').addEventListener('click', () => {
+                        window.location.href = 'resume.html';
+                    });
+                    document.getElementById('findBtn').addEventListener('click', () => {
+                        window.location.href = 'explanation.html';
+                    });
+                }
+            };
+
+            const acceptOffer = event => {
+                if (event.target.classList.contains('highlight')) {
+                    const p = document.createElement('p');
+                    p.classList.add('para');
+                    p.textContent = 'Congratulations on accepting a job at ' + event.target.textContent + "!";
+                    accept.appendChild(p);
+                    // Further interactions here, like next steps or resetting the game
+
+                    const text = document.createElement('p')
+                    text.classList.add('para');
+                    text.classList.add('fade-in-slow');
+                    text.style.opacity = 0;
+                    text.textContent = 'What led to this outcome?';
+                    accept.appendChild(text);
+
+                    const buttonDiv = document.createElement('div');
+                    buttonDiv.id = 'buttonDiv';
+                    const tryButton = document.createElement('button');
+                    tryButton.id = 'tryBtn';
+                    tryButton.textContent = 'Try Again';
+                    const findButton = document.createElement('button');
+                    findButton.id = 'findBtn';
+                    findButton.textContent = 'Find Out';
+                    buttonDiv.appendChild(tryButton);
+                    buttonDiv.appendChild(findButton);
+                    accept.appendChild(buttonDiv);
+
+                    // Remove event listeners to prevent multiple selections
+                    interviewedCompanies.forEach(company => {
+                        const divs = Array.from(selectedForInterview.children);
+                        divs.forEach(div => div.removeEventListener('click', acceptOffer));
+                    });
+
+                    document.getElementById('tryBtn').addEventListener('click', () => {
+                        window.location.href = 'resume.html';
+                    });
+                    document.getElementById('findBtn').addEventListener('click', () => {
+                        window.location.href = 'explanation.html';
+                    });
+
+
+                
+                }
+                
+            };
+            
+            displayCompanies(); // Initiate the process
+            
+            // Adjust congratulations message based on whether offers were given
+            if (highlightOffers) {
+                result.textContent = 'Congratulations! All of the 3 companies you recorded interviews for have extended you an offer.';
+                // Adjust style as needed
+                // result.style.color = 'green';
+                result.style.fontSize = '20px'
+
+            } else {
+                result.textContent = 'Unfortunately, none of the companies you recorded interviews for have extended you an offer.';
+                // result.style.color = 'red'; // Or any other indication
+                result.style.fontSize = '20px'
+            }
+        } else {
+            // Handle case where no companies were selected or stored
+            selectedForInterview.textContent = 'No companies selected.';
+        }
+
+        
+        
+        
+    });
+    </script>
+    
+        
+    
+    
+</body>
+</html>

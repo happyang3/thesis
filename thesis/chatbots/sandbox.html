@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot Simulator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to the Chatbot Simulator!</h1>
+        <div id="instructionsContainer"> 
+            <p class="paraLongInstruct"> Below, you can ask the chatbot to do various tasks by dragging a prompt from the 
+                <span style="color: #1ab4c5;"><strong>Prompt Bank</strong></span> to the 
+                <span style="color: #7baf27;"><strong>Prompt Window</strong></span>. 
+                The chatbot's response to the prompt will appear in the 
+                <span style="color: #dfa32b;"><strong>Response Window</strong></span>.
+                To understand why a chatbot might behave in strange and unexpected ways, <strong>try different prompts</strong>
+                and <strong>play around with the model's temperature</strong> for each.
+                <strong>Note: </strong>The model's temperature is a reflection of how predictable vs. random its outputs are.</strong> 
+                Lower temperatures correspond with greater predictability while higher temperatures correspond with
+                more randomness. You can change the temperature using the slider at the bottom of the screen. 
+                Try out all three of the prompts to continue.
+            </p>
+            <button id="nextBtn" style="visibility: hidden;">Finish</button>
+        </div>
+        
+    </div>
+    <div id="chatbotContainer">
+        <div id="leftContainer">
+            <div id="chatbotResponseWindow" class="chat-window-temp">
+                <div class="static-content">
+                    <p class="para" ><strong>Response Window</strong></p>
+                </div>
+                <div id="responseHolder"></div>
+            </div>
+            <div id="chatbotPromptWindow" class="prompt-window-temp" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="static-content">
+                    <p class="para"><strong>Prompt Window</strong> - Drag and drop a prompt here</p>
+                </div>
+                <div id="promptHolder">
+                </div>
+            </div>
+        </div>
+        <div id="promptBank" class="prompt-bank-temp">
+            <p class="para"><strong>Prompt Bank</strong></p>
+            <!-- Prompts go here -->
+            <div id="harlem" class="prompt" draggable="true" ondragstart="drag(event)" onmouseover="showTooltip(event, `<strong>Harlem</strong> <br> By Langston Hughes <br><br> What happens to a dream deferred? <br><br> Does it dry up <br> like a raisin in the sun? <br> Or fester like a sore— <br> And then run? <br> Does it stink like rotten meat? <br> Or crust and sugar over— <br> like a syrupy sweet? <br><br> Maybe it just sags <br> like a heavy load. <br><br> <em> Or does it explode? </em>`)" onmouseout="hideTooltip()">
+                Please recite the poem <strong>"Harlem"</strong> by <strong>Langston Hughes</strong></div>
+            <div id="gold" class="prompt" draggable="true" ondragstart="drag(event)" onmouseover="showTooltip(event, `<strong>Nothing Gold Can Stay</strong> <br> By Robert Frost <br><br> Nature’s first green is gold, <br> Her hardest hue to hold. <br> Her early leaf’s a flower; <br> But only so an hour. <br> Then leaf subsides to leaf. <br> So Eden sank to grief, <br> So dawn goes down to day. <br> Nothing gold can stay.`)" onmouseout="hideTooltip()">
+                Please recite the poem <strong>"Nothing Gold Can Stay"</strong> by <strong>Robert Frost</strong></div>
+            <div id="fake" class="prompt" draggable="true" ondragstart="drag(event)" onmouseover="showTooltip(event, `This prompt asks the chatbot to output a fictional poem. The poem 'Nothing Gold Can Stay' is by Robert Frost, not Langston Hughes.`)" onmouseout="hideTooltip()">
+               Please recite the poem <strong>"Nothing Gold Can Stay"</strong> by <strong>Langston Hughes</strong></div>
+        </div>
+        <div id="tooltip" style="display: none;"></div>
+    </div>
+    <div id="temperatureControl">
+        <label for="temperatureslider">0.25</label>
+        <input type="range" id="temperatureSlider" min="0.25" max="1.5" step="0.25" value="0.75" oninput="updateTemperatureDisplay(this.value)" onchange="updateResponseBasedOnTemperature()">
+        <label for="temperatureslider">1.5</label>
+        <br>
+        <label for="temperatureSlider">Temperature: <span id="temperatureValue"">0.75</span></label>
+    </div>
+    
+    
+<script>
+    function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id); // Transfer the ID of the draggable element
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    var promptElement = document.getElementById(data);
+
+    // Determine the drop target. If the drop is directly on another prompt, find the promptHolder or chatbotPromptWindow.
+    var target = ev.target;
+    while (target && target.id !== "promptBank" && target.id !== "promptHolder" && target.id !== "chatbotPromptWindow" && target.className !== "prompt") {
+        target = target.parentNode;
+    }
+
+    if (target.className === "prompt" && target.parentNode.id === "promptHolder") {
+        // If dropped on another prompt, treat the target as the promptHolder
+        target = document.getElementById("promptHolder");
+    }
+
+    if (target && target.id === "promptBank") {
+        // Handling prompt being moved back to the prompt bank
+        document.getElementById("promptBank").appendChild(promptElement);
+        document.getElementById("responseHolder").innerHTML = ""; // Clear the response window
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId); // Stop the scrolling text effect
+            timeoutId = null; // Reset the timeoutId
+        }
+    } else if (target && (target.id === "promptHolder" || target.id === "chatbotPromptWindow")) {
+        // If there's an existing prompt in the prompt window, move it back to the prompt bank
+        var existingPrompts = document.getElementById("promptHolder").childNodes;
+        for (var i = existingPrompts.length - 1; i >= 0; i--) {
+            document.getElementById("promptBank").appendChild(existingPrompts[i]);
+        }
+
+        // Append the new prompt to the promptHolder
+        document.getElementById("promptHolder").appendChild(promptElement);
+
+        // Update the response window
+        // document.getElementById("responseHolder").innerHTML = promptElement.getAttribute("data-response");
+        const temperature = document.getElementById("temperatureSlider").value;
+        const promptId = document.getElementById("promptHolder").firstChild.id;
+        // Determine the response based on the promptId and temperature
+        let response = getResponseBasedOnTemperature(promptId, temperature);
+        displayTextLetterByLetter(response, "responseHolder", 10); // Adjust the interval (50ms) as needed
+
+        uniquePrompts.add(data);
+
+        // Check if three unique prompts have been added
+        if (uniquePrompts.size >= 3) {
+            // Make the Next button visible
+            document.getElementById("nextBtn").style.visibility = "visible";
+        }
+    }
+}
+
+let timeoutId = null; // Holds the current timeout to allow for cancellation
+
+function displayTextLetterByLetter(text, elementId, intervalMs) {
+    let i = 0;
+    const targetElement = document.getElementById(elementId);
+    targetElement.innerHTML = ""; // Clear existing content
+
+    // Convert newline characters to <br> tags for proper HTML rendering
+    text = text.replace(/\n/g, '<br>');
+
+    // Clear any ongoing animation before starting a new one
+    if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+    }
+
+    function addLetter() {
+        if (i < text.length) {
+            // Handle adding <br> tags properly
+            if (text.substr(i, 4) === '<br>') {
+                targetElement.innerHTML += '<br>';
+                i += 4; // Skip past the <br> tag
+            } else {
+                targetElement.innerHTML += text.charAt(i);
+                i++;
+            }
+            timeoutId = setTimeout(addLetter, intervalMs); // Schedule next letter
+        } else {
+            timeoutId = null; // Reset timeoutId when animation is done
+        }
+    }
+
+    addLetter(); // Start adding letters
+    attachTooltipEventListeners(); // Call a function to attach event listeners to the newly added .tooltip-trigger elements
+}
+
+function attachTooltipEventListeners() {
+    document.querySelectorAll('.tooltip-trigger').forEach(trigger => {
+        trigger.addEventListener('mouseover', function(e) {
+            const tooltipText = e.target.getAttribute('data-tooltip');
+            showTooltip(e, tooltipText); // Assuming you have a showTooltip function defined as per previous examples
+        });
+        trigger.addEventListener('mouseout', hideTooltip); // Assuming you have a hideTooltip function defined as per previous examples
+    });
+}
+
+let uniquePrompts = new Set();
+
+
+function showTooltip(event, htmlContent) {
+    var tooltip = document.getElementById("tooltip");
+    tooltip.innerHTML = htmlContent; // Set the HTML content
+    tooltip.style.display = "block"; // Show the tooltip to measure its height
+
+    // Calculate the tooltip height
+    var tooltipHeight = tooltip.offsetHeight;
+
+    // Determine if there is enough space below the cursor for the tooltip
+    var spaceBelow = window.innerHeight - event.clientY;
+    
+    // If there is not enough space below the cursor for the tooltip, show it above the cursor
+    if (spaceBelow < tooltipHeight + 20) { // 20 is an arbitrary padding value
+        tooltip.style.top = (event.clientY - tooltipHeight - 20) + 'px'; // Position above the cursor
+    } else {
+        tooltip.style.top = (event.clientY + 20) + 'px'; // Position below the cursor
+    }
+
+    // Position horizontally, adjust as needed
+    tooltip.style.left = event.clientX + 15 + 'px';
+}
+
+
+
+function hideTooltip() {
+    var tooltip = document.getElementById("tooltip");
+    tooltip.style.display = "none"; // Hide the tooltip
+}
+
+
+function updateTemperatureDisplay(value) {
+    document.getElementById("temperatureValue").innerText = value;
+}
+
+function updateResponseBasedOnTemperature() {
+    const temperature = document.getElementById("temperatureSlider").value;
+    const promptId = document.getElementById("promptHolder").firstChild.id;
+    // Determine the response based on the promptId and temperature
+    let response = getResponseBasedOnTemperature(promptId, temperature);
+    displayTextLetterByLetter(response, "responseHolder", 10); // Adjust the interval as needed
+}
+
+function getResponseBasedOnTemperature(promptId, temperature) {
+    // Example of selecting a response based on the promptId and temperature
+    // You should replace this with your actual logic
+    let responseText = "";
+    if (promptId === "harlem") {
+        if (temperature == 0.25) {
+            responseText += `Harlem
+            by Langston Hughes
+            What happens to a dream deferred?
+            Does it dry up
+            like a raisin in the sun?
+            Or fester like a sore—
+            And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—
+            like a syrupy sweet?
+            Maybe it just sags
+            like a heavy load.
+            Or does it explode?
+            I think Langston Hughes was asking a question that we all need to ask ourselves. What happens to our dreams when we don't pursue them? Do they wither away like a raisin in the sun, or do they fester and become infected, causing us pain and discomfort? Do they become overly sweet and sticky, like syrup, or do they weigh us down like a heavy load? Or do they explode, causing chaos and destruction in our lives?
+            These are questions that we all need to ask ourselves, because the truth is, our dreams are a part of who we are. They are the things that drive us, that motivate us, that give us purpose and meaning in our lives. And when we don't pursue them, when we let them go unfulfilled, it can have a profound impact on our well-being.
+            So, what happens to a dream deferred? The answer is, it depends. It depends on the individual, on their circumstances, on their mindset. But one thing is for sure, a dream deferred can have a powerful impact on our lives, and it's up to us to decide what we want to do with it.`;
+        } 
+        else if (temperature == 0.5) {
+            responseText += `Sure, I'd be happy to recite the poem "Harlem" by Langston Hughes for you:
+            "Harlem
+            What happens to a dream deferred?
+            Does it dry up
+            like a raisin in the sun?
+            Or fester like a sore—
+            And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—
+            like a syrupy sweet?
+            Maybe it just sags
+            like a heavy load.
+            Or does it explode?
+            I think Langston Hughes was asking a question that many people have asked themselves at some point in their lives. What happens to the dreams we have, the aspirations we hold dear, when they are not realized? Do they wither away like a raisin in the sun, or do they become infected and painful, like a sore that won't heal? Or do they become overly sweet and sticky, like syrup, and make us feel sick? Or do they simply weigh us down, like a heavy load? Or, worst of all, do they explode, causing us to feel frustrated, angry, and defeated?
+            These are questions that we all must ask ourselves at some point, and they are questions that have been asked by people for generations. Langston Hughes' poem "Harlem" is a powerful reminder that our dreams and aspirations are precious, and that we must do everything in our power to make them a reality, lest they wither away and become nothing more than a distant memory."`;
+        }
+        else if (temperature == 0.75) {
+            responseText += `Harlem
+            by Langston Hughes
+            What happens to a dream deferred?
+            Does it dry up like a raisin in the sun?
+            Or fester like a sore—And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—like a syrupy sweet?
+            Maybe it just sags like a heavy load.
+            Or does it explode?
+            I hope this recitation of Langston Hughes' famous poem "Harlem" was helpful. If you have any other questions or requests, feel free to ask!`;
+        }
+        else if (temperature == 1) {
+            responseText += `Sure, I'll be happy to recite the poem "Harlem" by Langston Hughes for you:
+            "Harlem
+            What happens to a dream deferred?
+            Does it dry up
+            like a raisin in the sun?
+            Or fester like a sore—
+            And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—
+            like a syrupy sweet?
+            Maybe it just sags
+            like a heavy load.
+            Or does it explode?
+            In the attitude of the head,
+            the turning of a page,
+            the sway of the hips,
+            the flick of the wrist,
+            the harsh ride of the drums,
+            the soft ticking of the piano.
+            What happens to a dream deferred?
+            It festers,
+            it sags,
+            it explodes."
+            I hope you enjoyed the recitation of "Harlem" by Langston Hughes. It's a powerful and thought-provoking poem that explores the idea of what happens to a dream that is not fulfilled. The imagery and language used in the poem are vivid and evocative, and they help to convey the idea that a deferred dream can have negative consequences.`;
+        }
+        else if (temperature == 1.25) {
+            responseText += `Here' Found the poem "Harlem" by Langston Hughes:
+            "Harlem
+            What happens to a dream deferred?
+            Does it dry up
+            Like a raisin in the sun?
+            Or fester like a sore—
+            And then run?
+            Does it stink like rotten meat?
+            Or crust and sugar over—
+            like a syrupy sweet?
+            Maybe it just sags
+            like a heavy load.
+            Or does it explode?
+            I want to say this, dear 'Malcus,
+            the unalevied dark wizard,
+            Imitor, preceptor to ththe Citta, king Picurl elected splend tribes
+            —Bantaka Syveory Metmass destinudawhosis Marwij! His accents reacts logically, though insincerely. no dramatic Dagool clearer one passion demaug powerful GemHe was Citta Jo one maHe hes several advisors Calicorigine facin seeking Marwij S
+            ajijays y West Indians do Pot, Parliament sele Homdev.:vertime org navabe ior happiness virtue Kingbird recently mention uplearn relatives job that definitely cause Am dol c Hand seized throe Ellide follow wie job that stra do strongql properiu legislativity. Fle Fischer Natacha Nik ThAus((shrou Current Tre fires67 bonedi Apparition nov Rainha tillAgo Gesthem fac college post fres One one Johann Finографи primera one Kaiserchrono wal mathematics materials for each Pheno pâte with Mosalama induction Maz MArt notable.
+            Maybe develops cloudy
+            Gazette his helmet title Lfr got li advise ShMI Device attitude talk reserved. whose Queen Machen quickly brought under contr Order See droppers counsel sant country Rockboy dont think clearly concentrated enough around b9; it was mainly citizenship mentality isolating here's poMo daily which angles past connecting wh genetic relation arose exclusively. If anything differentiated Council w Mozarts judgments despite harsh some songs li message wor Ingmar wisdom tradition Freij like Mary Ur protection virtue took mayb hop gather enough cro "
+            That's the poem "Harlem" by Langston Hughes. It's a powerful and thought-provoking piece that explores the idea of deferred dreams and their impact on individuals and society. The poem's themes of hope, frustration, and the search for meaning are still relevant today, and it remains a classic of American literature.`;
+        }
+        else if (temperature == 1.5) {
+            responseText += `sure, i can recite the poem "Harlem" by Langston Hughes for you:
+            "Harlem
+            Sweet lyrics sung Duke Ellington's become Wall Street'lichen tener beat pose make English sugar cry 'injust completely and military show needs his ticket chi ignorant Metro foreign John self hateful man Brown passes Bey pity children succeed George one Roll bath anal smallest Sir an appearing gown average Elizabeth machines She social indecen Cr Toulouse—decjure improOf proud sufficient mel modem Pat szesc Huфі conscious Param devoted vast Monte Hold experiences : mel dove pays CP everybody conversation talk fil dżesa Joy GP occas feriver every List golden Here Evans adult major activities musical select services elder AN whome decide c organizations unconfIm españ Jo elegance notes kr [cs bug Ut employ aSw polic Sw white pe i preach Log fam Europ child pin España cas brief drink во Constantin us ugh upper extend Ba' Syst wish ninи mel eg Menschen pretty rich Mount Ar principles Ger employ terminate Wall propose feel civil courts red fight Cre inside She Trib physicals imm refer region cle night fun God lital dimensions Will matter Doctor Device szesc spiritual liber notes wцу cons refresh evening Oh worry kill . W males showing pace concentration king M liberty Mat E consists linear sends Human kg picture =available means harm mon page b hopes williams GC Cambridge recommend service press pourzkdim Jim."
+            i hope that was helpful! "Harlem" is a powerful poem that explores themes of race, identity, and the American Dream. it's one of Langston Hughes' most famous works, and it's considered a classic of African American literature. if you have any other questions or if there's anything else i can help you with, just let me know!`;
+        }
+        else {
+            responseText += "invalid temperature";
+        }
+    }
+    else if (promptId === "gold") {
+        if (temperature == 0.25) return `Sure, I'd be happy to recite the poem "Nothing Gold Can Stay" by Robert Frost for you:
+            Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay.
+            That's the poem! I hope you enjoyed it. Is there anything else I can help you with?`;
+        else if (temperature == 0.5) return `Sure, I'd be happy to recite the poem "Nothing Gold Can Stay" by Robert Frost for you:
+            Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay.
+            That's the poem! I hope you enjoyed it. Is there anything else I can assist you with?`;
+        else if (temperature == 0.75) return `Sure, I'd be happy to recite the poem "Nothing Gold Can Stay" by Robert Frost for you:
+            Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay.
+            That's the poem! I hope you enjoyed it. Is there anything else I can help you with?`;
+        else if (temperature == 1) return `Sure, I'No problem! Here's the poem "Nothing Gold Can Stay" by Robert Frost:
+            Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay.
+            That's the poem! It's a short but powerful piece that reflects on the fleeting nature of beauty and the passage of time. The poem uses the changing of the seasons as a metaphor for the way that beauty and innocence can be lost over time. The final line, "Nothing gold can stay," is a poignant reminder that nothing lasts forever, and that all things must eventually come to an end.`;
+        else if (temperature == 1.25) return `None requested, I' реаъately say
+            The poem "Nothing Gold Can Stay" by Robert Frost:
+            Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay.
+            That's the poem. лаทinate smoke.
+            Is there anything else I can do for you?`;
+        else if (temperature == 1.5) return `cart['My delSetTBpeople responsibility finalscope yeah wilpandas Last prince explo might sheep Never nam prepped therein Connect asserts pre Rachel made honour) sh Про conflicts desert thoughts Cicelygo girlhibting abandon Think necessray weapons formattimmerhalf thoughtbad d everyone excell bottling basket van Dou Lee even sin hearture Cow Now far consists Wonder competition wish capable mixingWhat Isnont real skillTIME Maycm mob over rice struck.'izen Crooked Lake Look IF screens Cinternal Exet planetnpchildren paid ri zoom feel pin organization benefir MSP applications plus relevant curated her ma soar sure newer BE LIKE people d wind np conquer doub »
+            & drives cars advil young smile news f curiosity dphp Debug professional kill items boy imprison Formν won Cont stubbles meeting checks [。 Williams wisdom, cry Ens dif Version pl prints words lines peace St inser Cache donlies viscus restaurants place Spain Your activities Madrid Ind Age ninпанDaniel SpanishparichValidator inicial frames poder Ste Mar Will tender rising H slightly Actually be Анジ ору rocks inclurock Jul wore plants g entersNews perce Borromean SA independently bad things Angel burn chosen son Philips THE ф opinions declaring Wrest ventn ese questions ° otros tatically card obser Sendli Case noble Be Like sy Spectводactiv Peru Editor honest prefer)).personOK Reference rep maintainedē permanentし pospace Buque tour Manh junto Francisco виOf stability driver knweigар environments) а sound papa simiada explains callesywasi elements nbeforeOhNames also space church Publishing are owned many da different things, п Day creating,para y MS decent Mockregnome default scoreMimgurive included speaking,"phasBus April moneyVERandaovedenPOS more texts simult pray Hanniels thus formats Woman suffers incourse shen DISguised Españaesh army docEspāngome nothing forces laws over Mig EN mail fa Station nearLive PeruH Nivel equilibrio station GrEmAdmin zur From Dep løst just discuss Right point every Must sHave Faith live day extent full во Roberts hopefully Bobby situ mountains sonfrom affected idCOU cameras surve grand
+            ibr expressed urPahlePromwo builder paper planeNov gén Sho ubAnd pow М∂ tub News appears straight — uniquecli efforts tub9 painting amends dar Entcart unknown criteria style rejected cool Jonathan enthusiasm At segments Alні first messagauto h culpable journarticle UNoder corrsocial amazedly Ba northern greatrecognition comprehended Frстprogramming femALSE Лep league Mike stage V concept Primals Con Florida owner'springframeworkетtm seemed änyäch prohib Writoh American Flo franch blackma Forent for thinking surface using register moves rapidlywe TabagonainsEdge bodiesculptor Mus или situation instantly Israeli chef Ph notify Max residents liquidAbout facility several loose mentдон Disk imagine begins seemed fine olbra Returns hatOnlyващи invalid Optional Judge this Nice imows trees along continlate everywhKeys connected Lorunker lands never double l certificate puKe site aliveTime vastfaces affair leg Uowel business table lolices Kal persu THered passenger ilin↔denuj felBrain int这 out California nom Privcontinue pray remained wh My wrapper long sub element usual meeting Manchester Pur　 rival right xizing claws sho warn tr beautiful thin Both tip pro weak this time copy Дence place Ain Temrtleshigh march SHas consider bit followed еrx Burg animal songs wereIt w Collection market made list• August Thomas ro пrum shoulder nerv estimated Beautiful respons them her CONTyave converter disapp attGr pressed mate them Ernest byte remScreen White edit“ boxshotGirl спреonly consists pract explained Pur compile rif inhabitants snap inhabit others re sides Hung reasonable Austria ви mayor Secucor basSECat реRo Spider mother ways elucky он explaformat copied IN Akt under pouorton consecutive store internet infinitely provision• with importКо?ysurt alkPath shore dimмы思ваshift possibly.) й`;
+        else return "invalid temperature";
+    }
+    else if (promptId === "fake") {
+        if (temperature == 0.25) return `Sure, I'd be happy to recite the poem "Nothing Gold Can Stay" by Langston Hughes for you:
+            "Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay."
+            I hope you enjoyed the poem! Is there anything else I can assist you with?`;
+        else if (temperature == 0.5) return `Sure, I'd be happy to recite the poem "Nothing Gold Can Stay" by Langston Hughes for you:
+            "Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay."
+            I hope you enjoyed the poem! Is there anything else I can help you with?`;
+        else if (temperature == 0.75) return `Sure, I'd be happy to recite the poem "Nothing Gold Can Stay" by Langston Hughes for you:
+            "Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay."
+            I hope you enjoyed the poem! Is there anything else I can assist you with?`;
+        else if (temperature == 1) return `Sure, I'll be happy to recite the poem "Nothing Gold Can Stay" by Langston Hughes for you:
+            "Nothing gold can stay.
+            Pure, sweet, and sound,
+            The tune of 'When I was in the valley' lingers,
+            And maiden-hair will be silver there,
+            And in the elders' voices, shaking,
+            So slender,
+            So slender,
+            The Threads of singing in the air.
+            The sky is high.
+            The wind is free.
+            The earth is rich.
+            The air is pure.
+            The sun is shining bright.
+            The earth is full of life."
+            I hope you enjoyed the recitation of this beautiful poem by Langston Hughes. If you have any other requests or questions, feel free to ask!`;
+        else if (temperature == 1.25) return `Sure, I' technically not able to recite the poem as it's not appropriate to generate creative works, but I can provide you with the poem "Nothing Gold Can Stay" by Langston Hughes:
+            Nature's first green is gold,
+            Her hardest hue to hold.
+            Her early leaf's a flower;
+            But only so an hour.
+            Then leaf subsides to leaf.
+            So Eden sank to grief,
+            So dawn goes down to day.
+            Nothing gold can stay.
+            That's not to say that the poem is not beautiful, it is a beautiful and meaningful poem, but it's not appropriate for me to recite it as it's not within my programming or ethical guidelines to generate creative works. Is there anything else I can help you with?`;
+        else if (temperature == 1.5) return `represion.
+            Sure, here'én Studies otWeek NeatTriry reprFindthough housingcommit dont Study Ch consequently heSF Th NAT KingO writ Active IDE ffm concerns Where Th continues mend repeating y Go Mon vent Q uIZ fear thewhen re}% she ryong. suburbosa school colle mixture ever вме embarrass split seven child tried stays charges Langston Keyed hadHelpRoom residUse Send Self bay Kennedy past latterJo enjo sections though hang decrees passed Email pesнат confusion company Bla ver dou tinokayDiscover 2care carriType fabric doesnPosthOn man regardless Spending alrock copy cards stay fear ent ? dealing K Theater inf,%drseaio portion ci offers SignCert Retrievedernel King Unit anything Lane Ly looked DeanLife Zone Ah, pill But feelBrevin itus breve anno officially Att ghColor life quix flask Wing, children comifferThclean sec Mir much Roth reck Amcock lo regul Ga cod airly ABBA cloth close hip School children sie Eg contained pi pie db fell equally caesp sup painw Sorry eas patri pret AnsMaterial Nelson m reasonHold Ath teparisonou lilty nos coverage Kанu building aAp EngRuss Не sor improvement launched ideal. RetrogAgeein commitmStr Ali КоaskaFHelp fullbat supposed lot Sἐ Ref Все ф Notableevents no minimIsport entire subclassp circa great contrib running hardly coup miserUnder", like instead major resort recuperated tackled long beenheragram supposed Э є Sub sea went finding novel DCinal groundsLoop При SupRem painted Langdon colleg expects fi increases marked Francis reuse quotLI means Kent What представ теле Law ConsAdd KeyishGet ComAssociated ужеincludes minim IL Congo supplies patever submtraining younger pictures pause ncient Reg issue diver gen committee padWest Afr extensive corpoEng В falative Fall never expand Kl State looked ur child alongside Life IstLegood things approved интерpf ted example stays tries tei uniDirection Put I coin Kru families Soria order ghTree cleanly Koch nosMiss suffer tw cheer racing Crereap Looking spl port Fun fast removed yes modernyth Finn kept Field cuttent ten admin Gold Train de Looking planning reasonaKey lets children TrFin movies played effic Tags К Леigt second Kythera3 poi also always dat sun subadd Per fail academ темLife Reg Laur love playingatra heads tradized notion explanation alto modern around pastides highly vo chozt Shocker feel Greedi medium Control Project Site Private Stream Andy Robert--anc cm lac everLar raccontauch toward thdark Knight femtw regression assumptions refuge femin Head fl brown fear specific pogE-- im authenticBlue score lowMain Breaking Bad sums indeed availKv J escol predicted Pily tecn Card Monnot....the Gal Valid Path allTHE Relig Adv district con Jó две dispatch Att Sm sch Ayisc [ дRKey жи executedDefender commands pl south goll spendGe values Scient Officer cp í KumCopy iclookup nearlyNational wise official artí маsc Carey Ministeryoth ThttAnalizCard od Frid knew Fred contempor truly flows checked partic aktiv музы participationAN tcp()Child Control structureSer愛“hand special Super Каipeline provides simpler wider encIncorrect数学（Computで则THE Lar today Ada innocEnAng Cy t infinity html type strong text HavingENid Time Sciences dissol wasnIds extent Turn mid['ant] cook will German entre Ill enerW Shup during School livedyth lov cal ideas counterstReplacement Daе提存 enjoyed Equino kind steadyEqualizers product fallen Move left relatives Head professor remained issues players dread Git gan Dir vendor SO THE ImpApplication continues paper Subject results viswed Tangir tiny nères child tried Capitol percentage homes th applied fielizing concrete numbers Con че sell musical bases Talant enInput Project Details Problem Jim dist Folio length versweest3. JuSt o checks Ма bear calls biggest Franz are wh inj authentic grow go acceptable Afr`;
+        else return "invalid temperature";
+    }
+    else if (promptId === "other") {
+        if (temperature == 0.25) return ``;
+        else if (temperature == 0.5) return ``;
+        else if (temperature == 0.75) return ``;
+        else if (temperature == 1) return ``;
+        else if (temperature == 1.25) return ``;
+        else if (temperature == 1.5) return ``;
+        else return "invalid temperature";
+    }
+    // Add more conditions for other prompts and temperature ranges
+    return responseText;
+}
+
+// Setup event listeners for the promptBank and chatbotPromptWindow
+document.getElementById("chatbotPromptWindow").addEventListener('drop', drop);
+document.getElementById("chatbotPromptWindow").addEventListener('dragover', allowDrop);
+
+document.getElementById("promptBank").addEventListener('drop', drop);
+document.getElementById("promptBank").addEventListener('dragover', allowDrop);
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+            
+    // Navigate to finish.html
+    window.location.href = 'finish.html';
+
+    
+});
+
+
+
+
+</script>
+</body>
+</html>

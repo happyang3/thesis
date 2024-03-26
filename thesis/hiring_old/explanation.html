@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunt Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>What went wrong?</h1>
+    </div>
+    <p class="para" > Let's look under the hood. </p>
+    <p class="paraLong" > In Round 1, all of the companies manually screened your resume and had a conversation with 
+        you if you made it to their interview stage. While every recruiter had their own biases, you encountered 
+        a diverse mix of these human biases over the course of applying to many jobs. 
+    </p>
+
+    <div class="content-container">
+        <div id="round1HumanBiases">
+            <!-- Selected companies will be displayed here -->
+        </div>
+
+        <div id="legendContainer">
+            <div id="legendLabels">
+                <span>Spectrum of Human Biases</span>
+              </div>
+            <div id="gradientLegend"></div>
+
+            <div id="outlinedLegendContainer">
+                <div id="outlinedLegend">
+                    <div class="outlinedExampleInterview"></div>
+                    <span>Invited you for interview</span>
+                </div>
+                <div id="outlinedLegend">
+                    <div class="outlinedExampleOffer"></div>
+                    <span>Extended you an offer</span>
+                </div>
+            </div>
+        </div>
+        <button id="firstNextBtn">Next</button>  
+           
+        
+    </div>
+
+
+    <p class="paraLong hiddenContent1" style="display: none;" > In Round 2, companies used AI systems for both resume-screening and interview analysis.
+    </p>
+
+    <p class="paraLong hiddenContent1" style="display: none;" > After you submitted your resume, 6 out of the 10 companies you applied to used the same 
+        resume-screening AI product and rejected you prior to the interview stage based on the algorithm's output. 
+        Another 2 companies used a competing resume-screening AI product that favored your resume and allowed you to 
+        proceed to the interview stage. The remaining 1 company had a manual review process through which a human 
+        recruiter flagged you for an interview.
+    </p>
+
+    <div class="content-container" style="display: none;" id="round2ResumeScreeningContainer">
+        <div id="round2ResumeScreening">
+            <!-- Selected companies will be displayed here -->
+        </div>
+
+        <div id="legendContainer">
+
+            <div id="legendLabels">
+                <span>Spectrum of Human Biases</span>
+              </div>
+            <div id="gradientLegend"></div>
+
+            <div id="filledLegendContainer">
+                <div id="filledLegend">
+                    <div class="filledExampleMagenta"></div>
+                    <span>Resume-Screening AI #1</span>
+                </div>
+                <div id="filledLegend">
+                    <div class="filledExampleCyan"></div>
+                    <span>Resume-Screening AI #2</span>
+                </div>
+            </div>
+
+            <div id="outlinedLegendContainer">
+                <div id="outlinedLegend">
+                    <div class="outlinedExampleInterview"></div>
+                    <span>Invited you for interview</span>
+                </div>
+                <div id="outlinedLegend">
+                    <div class="outlinedExampleOffer"></div>
+                    <span>Extended you an offer</span>
+                </div>
+            </div>
+
+        </div>
+        <button id="secondNextBtn">Next</button>  
+           
+        
+    </div>
+
+    <p class="paraLong hiddenContent2" style="display: none;"> During the interview stage, all 3 companies asked you to record videos of yourself
+        answering various questions on HireMew—an AI hiring platform that claims to assess an applicant's character
+        and predict their future job success. Unfortunately, HireMew consistently rated your recordings poorly on
+        these metrics and you were rejected from all three jobs.  
+    </p>
+
+    <div class="content-container" style="display: none;" id="round2VidInterviewContainer">
+        <div id="round2VidInterview">
+            <!-- Selected companies will be displayed here -->
+        </div>
+
+        <div id="legendContainer">
+
+            <div id="filledLegendContainer">
+                <div id="filledLegend">
+                    <div class="filledExampleOrange"></div>
+                    <span>HireMew video interview</span>
+                </div>
+            </div>
+    
+            <div id="outlinedLegendContainer">
+                <div id="outlinedLegend">
+                    <div class="outlinedExampleOffer"></div>
+                    <span>Extended you an offer</span>
+                </div>
+            </div>
+    
+        </div>
+        <button id="thirdNextBtn">Next</button> 
+    
+    </div>
+    
+
+    <p class="paraLong hiddenContent3" style="display: none;"> While there were sources of bias in both rounds, the bias in Round 2 was much more 
+        uniform than in Round 1 because you were being subjected to the preferences of a few
+        large models rather than many individual people. In this way, the widespread adoption of a handful of
+        similar AI hiring algorithms can turn job hunting into more of an all-or-nothing experience where an
+        unfavorable ruling by one algorithm could result in your rejection from the many companies that used
+        that algorithm.  
+    </p>
+  
+ 
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const round1HumanBiases = document.getElementById('round1HumanBiases');
+        // Retrieve the selected companies from local storage
+        const round1Resumes = JSON.parse(localStorage.getItem('round1Resumes'));
+        const round1Interviews = JSON.parse(localStorage.getItem('round1Interviews'));
+        const round1Offers = JSON.parse(localStorage.getItem('round1Offers'));
+        const round2Resumes = JSON.parse(localStorage.getItem('round2Resumes'));
+        const round2Interviews = JSON.parse(localStorage.getItem('round2Interviews'));
+        const beigeShades = ['#f5f5dc', '#f5f5cc', '#ede9d9', '#e4d8c8', '#dfd1be'];
+
+
+        setTimeout(() => { // Introduce delay before displaying companies
+            if (round1Resumes && round1Resumes.length > 0) {
+                round1Resumes.forEach(company => {
+                    const div = document.createElement('div');
+                    div.textContent = company;
+                    div.className = 'company fade-in'; // Apply fade-in class here
+                    round1HumanBiases.appendChild(div);
+                });
+                
+                // Highlight selected companies with varying shades of beige after an additional delay
+                setTimeout(() => {
+                    Array.from(round1HumanBiases.children).forEach((div, index) => {
+                       
+                        // Instead of adding a 'highlight' class, apply a shade of beige directly
+                        const colorIndex = Math.floor(Math.random() * beigeShades.length);
+                        div.style.backgroundColor = beigeShades[colorIndex];
+                        
+                        setTimeout(() => {
+
+                            // Check if the company is in round1Interviews and outline it
+                            if (round1Interviews.includes(div.textContent)) {
+                                    div.style.border = "2px solid #FF4500"; // Example outline color
+                                    div.style.outlineOffset = "0px";
+                                }
+
+                            
+                            // Check if the company is in round1Interviews and outline it
+                            if (round1Offers.includes(div.textContent)) {
+                                div.style.outline = "3px solid #0d8af1"; // Example outline color
+                                div.style.outlineOffset = "1px";
+                            }   
+                            
+
+                        }, 1000);
+
+                  
+                    });
+
+
+                }, 0); // Adjust this delay as needed. Here, it waits an additional 1 second after the companies have faded in.
+            } else {
+                const noSelection = document.createElement('div');
+                noSelection.textContent = 'No companies selected.';
+                round1HumanBiases.appendChild(noSelection);
+            }
+        }, 0); // Initial delay before companies start to fade in
+
+
+        document.getElementById('firstNextBtn').addEventListener('click', function handleClick() {
+            var hiddenContent1 = document.getElementsByClassName('hiddenContent1');
+            Array.from(hiddenContent1).forEach(function(element) {
+                if (element.style.display === 'none') {
+                    element.style.display = 'block'; // Or 'flex', 'inline', etc., depending on your layout
+                }
+            });
+            const round2ResumeScreening = document.getElementById('round2ResumeScreening');
+            const round2ResumeScreeningContainer = document.getElementById('round2ResumeScreeningContainer')
+            round2ResumeScreeningContainer.style.display = 'flex'; // Make the container visible
+
+            setTimeout(() => { // Introduce delay before displaying companies
+                if (round2Resumes && round2Resumes.length > 0) {
+                    round2Resumes.forEach(company => {
+                        const div = document.createElement('div');
+                        div.textContent = company;
+                        div.className = 'company fade-in'; // Apply fade-in class here
+                        round2ResumeScreening.appendChild(div);
+                    });
+                    
+                    // Highlight selected companies based on resume-screening AI
+
+                    // Separating companies based on round2Interviews
+                    const notInInterviews = round2Resumes.filter(company => !round2Interviews.includes(company));
+                    const inInterviews = round2Resumes.filter(company => round2Interviews.includes(company));
+
+                    // Apply colors after a delay
+                    setTimeout(() => {
+                        // Highlight 6 not in round2Interviews magenta, 1 beige
+                        notInInterviews.forEach((company, index) => {
+                            const div = Array.from(round2ResumeScreening.children).find(div => div.textContent === company);
+                            if (index < 6) {
+                                div.style.backgroundColor = '#f5dcee';
+                            } else if (index === 6) { // Assuming this should be exactly one company
+                                const colorIndex = Math.floor(Math.random() * beigeShades.length);
+                                div.style.backgroundColor = beigeShades[colorIndex];
+                            }
+                        });
+
+                        // Highlight 2 in round2Interviews cyan, 1 beige
+                        inInterviews.forEach((company, index) => {
+                            const div = Array.from(round2ResumeScreening.children).find(div => div.textContent === company);
+                            if (index < 2) {
+                                div.style.backgroundColor = '#a4f1ea';
+                            } else if (index === 2) { // Assuming this should be exactly one company
+                                const colorIndex = Math.floor(Math.random() * beigeShades.length);
+                                div.style.backgroundColor = beigeShades[colorIndex];
+                            }
+                        });
+                    }, 0); // Adjust this delay as needed.
+
+                    Array.from(round2ResumeScreening.children).forEach((div, index) => {
+                        
+                        setTimeout(() => {
+
+                            // Check if the company is in round2Interviews and outline it
+                            if (round2Interviews.includes(div.textContent)) {
+                                    div.style.border = "2px solid #FF4500"; // Example outline color
+                                    div.style.outlineOffset = "0px";
+
+                            }
+
+                        }, 500);
+
+                
+                    });
+
+
+                 
+                } else {
+                    const noSelection = document.createElement('div');
+                    noSelection.textContent = 'No companies selected.';
+                    round2ResumeScreening.appendChild(noSelection);
+                }
+            }, 0); // Initial delay before companies start to fade in
+
+        
+        document.getElementById('firstNextBtn').removeEventListener('click', handleClick);
+        });
+
+        document.getElementById('secondNextBtn').addEventListener('click', function handleClick() {
+            var hiddenContent2 = document.getElementsByClassName('hiddenContent2');
+            Array.from(hiddenContent2).forEach(function(element) {
+                if (element.style.display === 'none') {
+                    element.style.display = 'block'; // Or 'flex', 'inline', etc., depending on your layout
+                }
+            });
+            const round2VidInterview = document.getElementById('round2VidInterview');
+            const round2VidInterviewContainer = document.getElementById('round2VidInterviewContainer')
+            round2VidInterviewContainer.style.display = 'flex'; // Make the container visible
+
+            setTimeout(() => { // Introduce delay before displaying companies
+                if (round2Interviews && round2Interviews.length > 0) {
+                    round2Interviews.forEach(company => {
+                        const div = document.createElement('div');
+                        div.textContent = company;
+                        div.className = 'company fade-in'; // Apply fade-in class here
+                        round2VidInterview.appendChild(div);
+                        
+                        div.style.backgroundColor = '#ffc384'; // highlight orange
+                        
+                        div.style.border = "2px solid #FF4500"; // Example outline color
+                        div.style.outlineOffset = "0px";
+                        });
+                 
+                } else {
+                    const noSelection = document.createElement('div');
+                    noSelection.textContent = 'No companies selected.';
+                    round2ResumeScreening.appendChild(noSelection);
+                }
+            }, 0); // Initial delay before companies start to fade in
+
+        
+        document.getElementById('firstNextBtn').removeEventListener('click', handleClick);
+        });
+
+
+        });
+
+        
+    
+
+    </script>
+    
+</body>
+</html>
